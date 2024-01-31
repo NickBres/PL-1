@@ -216,23 +216,15 @@ Queue data structure with enqueue dequeue and search.
 
 (define-type TaggedQueue
   [EmptyTQ] ; empty value
-  [Node Symbol Any TaggedQueue] ; id value nextNode
+  [Enqueue Symbol Any TaggedQueue] ; id value nextNode
   )
 
-
-(: Enqueue : Symbol Any TaggedQueue -> TaggedQueue)
-(define (Enqueue sym val queue)
-(cases queue
-  [(EmptyTQ) (Node sym val (EmptyTQ))] ;; if node is empty return new node
-  [(Node s v n) (Node s v (Enqueue sym val n))] ;; seek until last node and add new node to it
-  )
-  )
 
 (: search-queue : Symbol TaggedQueue -> Any)
 (define (search-queue sym queue)
   (cases queue
     [(EmptyTQ) #f] ;; if queue empty or nothing found return false
-    [(Node s v n) (if (eq? s sym) v (search-queue sym n))] ;; if found return value else keep seeking
+    [(Enqueue s v n) (if (eq? s sym) v (search-queue sym n))] ;; if found return value else keep seeking
     )
   )
 
@@ -240,7 +232,7 @@ Queue data structure with enqueue dequeue and search.
 (define (dequeue-queue queue)
   (cases queue
     [(EmptyTQ) #f] ;; if nothing to remove return false
-    [(Node s v n) n] ;; return next node
+    [(Enqueue s v n) n] ;; return next node
   )
   )
 
@@ -252,10 +244,26 @@ Queue data structure with enqueue dequeue and search.
 (test (dequeue-queue (Enqueue 'x 42 (EmptyTQ))) => (EmptyTQ))
 (test (dequeue-queue (EmptyTQ)) => #f)
 ;; mine
-(test (search-queue 'y (Enqueue 'y 55 (Enqueue 'x 42 (EmptyTQ)))) => 55) ;; search in multiple elements
-(test (search-queue 'z (Enqueue 'y 55 (Enqueue 'x 42 (EmptyTQ)))) => #f) ;; search for not existing element
-(test (dequeue-queue (Enqueue 'y 55 (Enqueue 'x 42 (EmptyTQ)))) => (Node 'y 55 (EmptyTQ))) ;; dequeue with multiple
-(test (Enqueue 'y 100 (Enqueue 'x 42 (EmptyTQ))) => (Node 'x 42 (Node 'y 100 (EmptyTQ)))) ;; enqueue for non empty queue
+;; Search for Elements in Different Positions
+(test (search-queue 'a (Enqueue 'c 30 (Enqueue 'b 20 (Enqueue 'a 10 (EmptyTQ))))) => 10) ; front
+(test (search-queue 'b (Enqueue 'c 30 (Enqueue 'b 20 (Enqueue 'a 10 (EmptyTQ))))) => 20) ; middle
+(test (search-queue 'c (Enqueue 'c 30 (Enqueue 'b 20 (Enqueue 'a 10 (EmptyTQ))))) => 30) ; back
+
+;; Dequeueing from a Queue with Multiple Elements
+(test (dequeue-queue (Enqueue 'c 30 (Enqueue 'b 20 (Enqueue 'a 10 (EmptyTQ))))) => (Enqueue 'b 20 (Enqueue 'a 10 (EmptyTQ))))
+
+;; Enqueueing Elements with the Same Symbol
+(test (Enqueue 'a 100 (Enqueue 'a 50 (EmptyTQ))) => (Enqueue 'a 100 (Enqueue 'a 50 (EmptyTQ))))
+
+
+;; Searching in an Empty Queue
+(test (search-queue 'x (EmptyTQ)) => #f)
+
+;; Dequeueing from an Already Empty Queue
+(test (dequeue-queue (EmptyTQ)) => #f)
+
+
+
 
 
 #|
