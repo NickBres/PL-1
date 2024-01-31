@@ -270,13 +270,12 @@ Queue data structure with enqueue dequeue and search.
 Question 4
 __________
 <Q4> :=
-      | <var> = <String>
       | <var> = <concat>
-<concat> :=       
-      | <var> ++ <var>
-      | <var> ++ <String>
-      | <String> ++ <var>
-      | <String> ++ <String>
+<concat> :=
+      | <var>
+      | <string>
+      | <concat> ++ <var>
+      | <concat> ++ <String>
 <var> := <varchar>
       | <varchar><var>
 <String> := "<chars>"
